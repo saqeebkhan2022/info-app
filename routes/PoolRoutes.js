@@ -1,0 +1,10 @@
+import { Router } from "express";
+import * as controller from "../controllers/PoolController.js";
+import { requireRoles } from "../middleware/AuthMiddleware.js";
+const router = Router();
+router.use(requireRoles("Administrator", "Manager"));
+router.get("/", controller.listPool);
+router.post("/", controller.createPool);
+router.put("/:id", controller.updatePool);
+router.delete("/:id", controller.deletePool);
+export default router;

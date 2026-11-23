@@ -1,0 +1,10 @@
+create table if not exists roles(id serial primary key,name text unique not null, profile text not null check(profile in ('Administrator','Manager','Retainer')), builtin boolean default false,check(profile <> 'Administrator' or builtin));
+create table if not exists users(id serial primary key,name text not null,email text unique not null,password_hash text not null,role_id int references roles on delete restrict, active boolean not null default true, version int not null default 1, created_at timestamptz default now());
+create table if not exists clients(id serial primary key,name text not null,phone text unique not null,email text,created_at timestamptz default now());
+create table if not exists pools(id serial primary key,name text unique not null,color text not null,active boolean default true);
+create table if not exists brokers(id serial primary key,name text unique not null,color text not null,active boolean default true);
+create table if not exists operations(id serial primary key,client_id int not null references clients,pool_id int not null references pools,broker_id int not null references brokers(id),retainer_id int references users on delete set null,manager_id int references users on delete set null,account_no text,platform text,trading_type text not null,first_deposit numeric(16,2) not null check(first_deposit>=0),re_deposit numeric(16,2) not null check(re_deposit>=0),withdrawal numeric(16,2) not null check(withdrawal>=0),created_at timestamptz default now(),deleted_at timestamptz);
+create index if not exists operations_owner on operations(retainer_id,created_at) where deleted_at is null;
+insert into roles(name,profile,builtin) values ('Super Admin','Administrator',true),('Manager','Manager',true),('Retainer','Retainer',true) on conflict(name) do nothing;
+insert into pools(name,color) values ('Pool A','#ffc107'),('Pool B','#198754') on conflict(name) do nothing;
+insert into brokers(name,color) values ('Broker 1','#dc3545'),('Broker 2','#0d6efd'),('Broker 3','#0dcaf0') on conflict(name) do nothing;

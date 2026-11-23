@@ -1,0 +1,10 @@
+import { Router } from "express";
+import * as controller from "../controllers/BrokerController.js";
+import { requireRoles } from "../middleware/AuthMiddleware.js";
+const router = Router();
+router.use(requireRoles("Administrator", "Manager"));
+router.get("/", controller.listBroker);
+router.post("/", controller.createBroker);
+router.put("/:id", controller.updateBroker);
+router.delete("/:id", controller.deleteBroker);
+export default router;

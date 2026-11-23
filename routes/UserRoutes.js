@@ -1,0 +1,10 @@
+import { Router } from "express";
+import * as controller from "../controllers/UserController.js";
+import { requireRoles } from "../middleware/AuthMiddleware.js";
+const router = Router();
+router.use(requireRoles("Administrator", "Manager"));
+router.get("/", controller.listUser);
+router.post("/", controller.createUser);
+router.put("/:id", controller.updateUser);
+router.delete("/:id", controller.deleteUser);
+export default router;
